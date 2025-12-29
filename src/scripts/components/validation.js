@@ -13,24 +13,18 @@ const hideInputError = (formElement, inputElement, settings) => {
 }
 
 const checkInputValidity = (formElement, inputElement, settings) => {
-  const value = inputElement.value.trim()
-  
+  const trimmedValue = inputElement.value.trim()
+
   inputElement.setCustomValidity("")
-  
-  if (inputElement.classList.contains("popup__input_type_name") || 
-      inputElement.classList.contains("popup__input_type_card-name")) {
-    const nameRegex = /^[a-zA-Zа-яА-ЯёЁ\s\-]+$/
-    if (value.length > 0 && !nameRegex.test(value)) {
-      const customMessage = inputElement.dataset.errorMessage || "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
-      inputElement.setCustomValidity(customMessage)
-    }
+
+  if (inputElement.required && trimmedValue.length === 0) {
+    inputElement.setCustomValidity("Заполните это поле.")
   }
-  
-  if (inputElement.type === "url" && value.length > 0) {
-    try {
-      new URL(value)
-    } catch (e) {
-      inputElement.setCustomValidity("Введите корректный URL.")
+
+  if (inputElement.dataset.errorMessage && trimmedValue.length > 0) {
+    const nameRegex = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/
+    if (!nameRegex.test(trimmedValue)) {
+      inputElement.setCustomValidity(inputElement.dataset.errorMessage)
     }
   }
   
@@ -92,18 +86,6 @@ export const clearValidation = (formElement, settings) => {
   })
 
   disableSubmitButton(buttonElement, settings)
-}
-
-export const resetValidation = (formElement, settings) => {
-  const inputList = Array.from(formElement.querySelectorAll(settings.inputSelector))
-  const buttonElement = formElement.querySelector(settings.submitButtonSelector)
-
-  inputList.forEach((inputElement) => {
-    inputElement.setCustomValidity("")
-    checkInputValidity(formElement, inputElement, settings)
-  })
-
-  toggleButtonState(inputList, buttonElement, settings)
 }
 
 export const enableValidation = (settings) => {

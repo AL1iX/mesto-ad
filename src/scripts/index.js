@@ -1,7 +1,7 @@
 import { initialCards } from "./cards.js"
 import { createCardElement, deleteCard, likeCard } from "./components/card.js"
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js"
-import { enableValidation, clearValidation, resetValidation } from "./components/validation.js"
+import { enableValidation, clearValidation } from "./components/validation.js"
 
 const placesWrap = document.querySelector(".places__list")
 const profileFormModalWindow = document.querySelector(".popup_type_edit")
@@ -43,7 +43,7 @@ const handleProfileFormSubmit = (evt) => {
   closeModalWindow(profileFormModalWindow)
 }
 
-const handleAvatarFromSubmit = (evt) => {
+const handleAvatarFormSubmit = (evt) => {
   evt.preventDefault()
   profileAvatar.style.backgroundImage = `url(${avatarInput.value.trim()})`
   avatarForm.reset()
@@ -85,12 +85,12 @@ enableValidation(validationSettings)
 
 profileForm.addEventListener("submit", handleProfileFormSubmit)
 cardForm.addEventListener("submit", handleCardFormSubmit)
-avatarForm.addEventListener("submit", handleAvatarFromSubmit)
+avatarForm.addEventListener("submit", handleAvatarFormSubmit)
 
 openProfileFormButton.addEventListener("click", () => {
   profileTitleInput.value = profileTitle.textContent
   profileDescriptionInput.value = profileDescription.textContent
-  resetValidation(profileForm, validationSettings)
+  clearValidation(profileForm, validationSettings)
   openModalWindow(profileFormModalWindow)
 })
 
