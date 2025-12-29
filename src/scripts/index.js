@@ -1,7 +1,7 @@
-import { initialCards } from "./cards.js"
 import { createCardElement, deleteCard, likeCard } from "./components/card.js"
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js"
 import { enableValidation, clearValidation } from "./components/validation.js"
+import { getUserInfo, getCardList } from "./components/api.js"
 
 const placesWrap = document.querySelector(".places__list")
 const profileFormModalWindow = document.querySelector(".popup_type_edit")
@@ -106,17 +106,27 @@ openCardFormButton.addEventListener("click", () => {
   openModalWindow(cardFormModalWindow)
 })
 
-initialCards.forEach((data) => {
-  placesWrap.append(
-    createCardElement(data, {
-      onPreviewPicture: handlePreviewPicture,
-      onLikeIcon: likeCard,
-      onDeleteCard: deleteCard,
-    })
-  )
-})
-
 const allPopups = document.querySelectorAll(".popup")
 allPopups.forEach((popup) => {
   setCloseModalWindowEventListeners(popup)
 })
+
+Promise.all([getCardList(), getUserInfo()])
+  .then(([cards, userData]) => {
+    profileTitle.textContent = userData.name
+    profileDescription.textContent = userData.about
+    profileAvatar.style.backgroundImage = `url(${userData.avatar})`
+
+    cards.forEach((data) => {
+      placesWrap.append(
+        createCardElement(data, {
+          onPreviewPicture: handlePreviewPicture,
+          onLikeIcon: likeCard,
+          onDeleteCard: deleteCard,
+        })
+      )
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+  })
