@@ -1,7 +1,14 @@
 import { createCardElement, deleteCard, likeCard } from "./components/card.js"
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js"
 import { enableValidation, clearValidation } from "./components/validation.js"
-import { getUserInfo, getCardList, setUserInfo, setUserAvatar } from "./components/api.js"
+import {
+  getUserInfo,
+  getCardList,
+  setUserInfo,
+  setUserAvatar,
+  addNewCard,
+  deleteCardAPI,
+} from "./components/api.js"
 
 const placesWrap = document.querySelector(".places__list")
 const profileFormModalWindow = document.querySelector(".popup_type_edit")
@@ -28,6 +35,8 @@ const profileAvatar = document.querySelector(".profile__image")
 const avatarFormModalWindow = document.querySelector(".popup_type_edit-avatar")
 const avatarForm = avatarFormModalWindow.querySelector(".popup__form")
 const avatarInput = avatarForm.querySelector(".popup__input")
+
+let currentUserId
 
 const handlePreviewPicture = ({ name, link }) => {
   imageElement.src = link
@@ -68,25 +77,41 @@ const handleAvatarFormSubmit = (evt) => {
     })
 }
 
+const handleDeleteCard = (cardElement, cardId) => {
+  deleteCardAPI(cardId)
+    .then(() => {
+      deleteCard(cardElement)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
 const handleCardFormSubmit = (evt) => {
   evt.preventDefault()
-  placesWrap.prepend(
-    createCardElement(
-      {
-        name: cardNameInput.value.trim(),
-        link: cardLinkInput.value.trim(),
-      },
-      {
-        onPreviewPicture: handlePreviewPicture,
-        onLikeIcon: likeCard,
-        onDeleteCard: deleteCard,
-      }
-    )
-  )
-
-  cardForm.reset()
-  clearValidation(cardForm, validationSettings)
-  closeModalWindow(cardFormModalWindow)
+  addNewCard({
+    name: cardNameInput.value.trim(),
+    link: cardLinkInput.value.trim(),
+  })
+    .then((cardData) => {
+      placesWrap.prepend(
+        createCardElement(
+          cardData,
+          currentUserId,
+          {
+            onPreviewPicture: handlePreviewPicture,
+            onLikeIcon: likeCard,
+            onDeleteCard: handleDeleteCard,
+          }
+        )
+      )
+      cardForm.reset()
+      clearValidation(cardForm, validationSettings)
+      closeModalWindow(cardFormModalWindow)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const validationSettings = {
@@ -133,13 +158,14 @@ Promise.all([getCardList(), getUserInfo()])
     profileTitle.textContent = userData.name
     profileDescription.textContent = userData.about
     profileAvatar.style.backgroundImage = `url(${userData.avatar})`
+    currentUserId = userData._id
 
     cards.forEach((data) => {
       placesWrap.append(
-        createCardElement(data, {
+        createCardElement(data, currentUserId, {
           onPreviewPicture: handlePreviewPicture,
           onLikeIcon: likeCard,
-          onDeleteCard: deleteCard,
+          onDeleteCard: handleDeleteCard,
         })
       )
     })
