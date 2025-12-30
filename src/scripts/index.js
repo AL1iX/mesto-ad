@@ -78,13 +78,26 @@ const handleAvatarFormSubmit = (evt) => {
 }
 
 const handleDeleteCard = (cardElement, cardId) => {
-  deleteCardAPI(cardId)
-    .then(() => {
-      deleteCard(cardElement)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+  const confirmModalWindow = document.querySelector(".popup_type_remove-card")
+  const confirmForm = confirmModalWindow.querySelector(".popup__form")
+
+  openModalWindow(confirmModalWindow)
+
+  confirmForm.onsubmit = (evt) => {
+    evt.preventDefault()
+
+    deleteCardAPI(cardId)
+      .then(() => {
+        deleteCard(cardElement)
+        closeModalWindow(confirmModalWindow)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        confirmForm.onsubmit = null
+      })
+  }
 }
 
 const handleCardFormSubmit = (evt) => {
