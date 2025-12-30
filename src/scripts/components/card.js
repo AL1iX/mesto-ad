@@ -20,12 +20,19 @@ export const createCardElement = (
 ) => {
   const cardElement = getTemplate();
   const likeButton = cardElement.querySelector(".card__like-button");
+  const likeCount = cardElement.querySelector(".card__like-count");
   const deleteButton = cardElement.querySelector(".card__control-button_type_delete");
   const cardImage = cardElement.querySelector(".card__image");
 
   cardImage.src = data.link;
   cardImage.alt = data.name;
   cardElement.querySelector(".card__title").textContent = data.name;
+  likeCount.textContent = data.likes.length;
+
+  // Проверка на наличие лайка текущего пользователя
+  if (data.likes.some((user) => user._id === userId)) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
 
   if (userId !== data.owner._id) {
     deleteButton.remove();
@@ -34,7 +41,7 @@ export const createCardElement = (
   }
 
   if (onLikeIcon) {
-    likeButton.addEventListener("click", () => onLikeIcon(likeButton));
+    likeButton.addEventListener("click", () => onLikeIcon(cardElement, data._id));
   }
 
   if (onPreviewPicture) {
