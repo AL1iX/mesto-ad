@@ -21,3 +21,24 @@ export const getCardList = () => {
     headers: config.headers,
   }).then(getResponseData)
 }
+
+export const setUserInfo = ({ name, about }) => {
+  return fetch(`${config.baseUrl}/users/me`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({
+      name,
+      about,
+    }),
+  }).then(getResponseData)
+}
+
+export const setUserAvatar = ({ avatar }) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar,
+    }),
+  }).then(getResponseData)
+}

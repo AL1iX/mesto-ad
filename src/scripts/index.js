@@ -1,7 +1,7 @@
 import { createCardElement, deleteCard, likeCard } from "./components/card.js"
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js"
 import { enableValidation, clearValidation } from "./components/validation.js"
-import { getUserInfo, getCardList } from "./components/api.js"
+import { getUserInfo, getCardList, setUserInfo, setUserAvatar } from "./components/api.js"
 
 const placesWrap = document.querySelector(".places__list")
 const profileFormModalWindow = document.querySelector(".popup_type_edit")
@@ -38,17 +38,34 @@ const handlePreviewPicture = ({ name, link }) => {
 
 const handleProfileFormSubmit = (evt) => {
   evt.preventDefault()
-  profileTitle.textContent = profileTitleInput.value.trim()
-  profileDescription.textContent = profileDescriptionInput.value.trim()
-  closeModalWindow(profileFormModalWindow)
+  setUserInfo({
+    name: profileTitleInput.value.trim(),
+    about: profileDescriptionInput.value.trim(),
+  })
+    .then((userData) => {
+      profileTitle.textContent = userData.name
+      profileDescription.textContent = userData.about
+      closeModalWindow(profileFormModalWindow)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const handleAvatarFormSubmit = (evt) => {
   evt.preventDefault()
-  profileAvatar.style.backgroundImage = `url(${avatarInput.value.trim()})`
-  avatarForm.reset()
-  clearValidation(avatarForm, validationSettings)
-  closeModalWindow(avatarFormModalWindow)
+  setUserAvatar({
+    avatar: avatarInput.value.trim(),
+  })
+    .then((userData) => {
+      profileAvatar.style.backgroundImage = `url(${userData.avatar})`
+      avatarForm.reset()
+      clearValidation(avatarForm, validationSettings)
+      closeModalWindow(avatarFormModalWindow)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const handleCardFormSubmit = (evt) => {
