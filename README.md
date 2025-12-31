@@ -2,6 +2,7 @@
 
 - **Публикация (GitHub Pages)**: https://al1ix.github.io/mesto-production/
 - **Репозиторий**: https://github.com/AL1iX/mesto-production
+- **Репозиторий (скрытый)**: https://github.com/AL1iX/mesto-ad
 
 ### Команды
 
