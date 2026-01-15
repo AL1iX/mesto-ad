@@ -82,7 +82,7 @@ const handleProfileFormSubmit = (evt) => {
       closeModalWindow(profileFormModalWindow)
     })
     .catch((err) => {
-      console.log(err)
+      console.error(err)
     })
     .finally(() => {
       renderLoading(false, evt.submitter)
@@ -102,7 +102,7 @@ const handleAvatarFormSubmit = (evt) => {
       closeModalWindow(avatarFormModalWindow)
     })
     .catch((err) => {
-      console.log(err)
+      console.error(err)
     })
     .finally(() => {
       renderLoading(false, evt.submitter)
@@ -129,7 +129,7 @@ confirmForm.addEventListener("submit", (evt) => {
       cardIdToDelete = null
     })
     .catch((err) => {
-      console.log(err)
+      console.error(err)
     })
     .finally(() => {
       renderLoading(false, evt.submitter, 'Да')
@@ -147,7 +147,7 @@ const handleLikeCard = (cardElement, cardId) => {
       likeCount.textContent = cardData.likes.length
     })
     .catch((err) => {
-      console.log(err)
+      console.error(err)
     })
 }
 
@@ -175,7 +175,7 @@ const handleCardFormSubmit = (evt) => {
       closeModalWindow(cardFormModalWindow)
     })
     .catch((err) => {
-      console.log(err)
+      console.error(err)
     })
     .finally(() => {
       renderLoading(false, evt.submitter, 'Создать')
@@ -250,7 +250,7 @@ const handleLogoClick = () => {
       openModalWindow(statsModalWindow)
     })
     .catch((err) => {
-      console.log(err)
+      console.error(err)
     })
 }
 
@@ -304,5 +304,5 @@ Promise.all([getCardList(), getUserInfo()])
     })
   })
   .catch((err) => {
-    console.log(err)
+    console.error(err)
   })
