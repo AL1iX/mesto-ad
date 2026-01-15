@@ -1,4 +1,4 @@
-import { createCardElement, deleteCard, likeCard } from "./components/card.js"
+import { createCardElement, deleteCard } from "./components/card.js"
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js"
 import { enableValidation, clearValidation } from "./components/validation.js"
 import {
@@ -191,13 +191,6 @@ const validationSettings = {
   errorClass: "popup__error_visible",
 }
 
-const formatDate = (date) =>
-  date.toLocaleDateString("ru-RU", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-
 const createInfoString = (term, description) => {
   const element = statTemplate.querySelector(".popup__info-item").cloneNode(true)
   element.querySelector(".popup__info-term").textContent = term
@@ -205,47 +198,53 @@ const createInfoString = (term, description) => {
   return element
 }
 
-const createUserString = (userName) => {
+const createCardBadge = (cardName) => {
   const element = userTemplate.querySelector(".popup__list-item").cloneNode(true)
-  element.textContent = userName
+  element.textContent = cardName
   return element
 }
 
 const handleLogoClick = () => {
   getCardList()
     .then((cards) => {
-      statsModalInfoList.innerHTML = ""
-      statsModalUsersList.innerHTML = ""
+      statsModalInfoList.replaceChildren()
+      statsModalUsersList.replaceChildren()
       
-      statsModalTitle.textContent = "Статистика пользователей"
-      statsModalUsersTitle.textContent = "Все пользователи:"
+      statsModalTitle.textContent = "Статистика карточек"
+      statsModalUsersTitle.textContent = "Популярные карточки:"
 
-      const totalCards = cards.length
-      const firstDate = cards.length > 0 ? formatDate(new Date(cards[cards.length - 1].createdAt)) : "-"
-      const lastDate = cards.length > 0 ? formatDate(new Date(cards[0].createdAt)) : "-"
-      
-      const userCounts = {}
       const uniqueUsers = new Map()
+      let totalLikes = 0
+      let maxLikesOnCard = 0
+      let likeChampion = "-"
 
       cards.forEach(card => {
         const userId = card.owner._id
-        userCounts[userId] = (userCounts[userId] || 0) + 1
         if (!uniqueUsers.has(userId)) {
           uniqueUsers.set(userId, card.owner.name)
+        }
+        
+        const cardLikes = card.likes.length
+        totalLikes += cardLikes
+        
+        if (cardLikes > maxLikesOnCard) {
+          maxLikesOnCard = cardLikes
+          likeChampion = card.owner.name
         }
       })
 
       const totalUsers = uniqueUsers.size
-      const maxCards = Math.max(0, ...Object.values(userCounts))
 
-      statsModalInfoList.append(createInfoString("Всего карточек:", totalCards))
-      statsModalInfoList.append(createInfoString("Первая создана:", firstDate))
-      statsModalInfoList.append(createInfoString("Последняя создана:", lastDate))
       statsModalInfoList.append(createInfoString("Всего пользователей:", totalUsers))
-      statsModalInfoList.append(createInfoString("Максимум карточек от одного:", maxCards))
+      statsModalInfoList.append(createInfoString("Всего лайков:", totalLikes))
+      statsModalInfoList.append(createInfoString("Максимально лайков от одного:", maxLikesOnCard))
+      statsModalInfoList.append(createInfoString("Чемпион лайков:", likeChampion))
 
-      uniqueUsers.forEach((name) => {
-        statsModalUsersList.append(createUserString(name))
+      const sortedCards = [...cards].sort((a, b) => b.likes.length - a.likes.length)
+      const topCards = sortedCards.slice(0, 3)
+      
+      topCards.forEach((card) => {
+        statsModalUsersList.append(createCardBadge(card.name))
       })
 
       openModalWindow(statsModalWindow)
