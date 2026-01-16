@@ -209,7 +209,7 @@ const handleLogoClick = () => {
     .then((cards) => {
       statsModalInfoList.replaceChildren()
       statsModalUsersList.replaceChildren()
-      
+
       statsModalTitle.textContent = "Статистика карточек"
       statsModalUsersTitle.textContent = "Популярные карточки:"
 
@@ -223,10 +223,10 @@ const handleLogoClick = () => {
         if (!uniqueUsers.has(userId)) {
           uniqueUsers.set(userId, card.owner.name)
         }
-        
+
         const cardLikes = card.likes.length
         totalLikes += cardLikes
-        
+
         if (cardLikes > maxLikesOnCard) {
           maxLikesOnCard = cardLikes
           likeChampion = card.owner.name
@@ -242,7 +242,7 @@ const handleLogoClick = () => {
 
       const sortedCards = [...cards].sort((a, b) => b.likes.length - a.likes.length)
       const topCards = sortedCards.slice(0, 3)
-      
+
       topCards.forEach((card) => {
         statsModalUsersList.append(createCardBadge(card.name))
       })

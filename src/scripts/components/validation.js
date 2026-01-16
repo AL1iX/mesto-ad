@@ -27,7 +27,7 @@ const checkInputValidity = (formElement, inputElement, settings) => {
       inputElement.setCustomValidity(inputElement.dataset.errorMessage)
     }
   }
-  
+
   if (!inputElement.validity.valid) {
     const errorMessage = inputElement.validationMessage
     showInputError(formElement, inputElement, errorMessage, settings)
